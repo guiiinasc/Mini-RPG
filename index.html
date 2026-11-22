@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura If Else</title>
+
+    <style>
+        body {
+            background-color: #101827;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .jogo {
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .title {
+            text-align: center;
+            color: #e5b75c;
+            font-size: 32px;
+            margin-bottom: 35px;
+        }
+
+        .status {
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #475569;
+        }
+
+        .status h2 {
+            color: #e5b75c;
+        }
+
+        .barra-vida {
+            width: 100%;
+            height: 18px;
+            background-color: #475569;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .barraVida {
+            width: 100%;
+            height: 100%;
+            background-color: #22c55e;
+            border-radius: 10px;
+        }
+
+        .mensagens h2 {
+            color: #e5b75c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="jogo">
+        <h1 class="title"> Aventura: Reino Perdido</h1>
+        <div class="status">
+            <h2 id="playerName">Aventureiro</h2>
+            <p>Vida: <span id="vidaJogador">100</span>/100</p>
+
+            <div class="barra-vida">
+                <div class="barraVida"></div>
+            </div>
+
+            <p>Poções <span id="pocoesJogador">2</span></p>
+        </div>
+
+        <div id="cardInimigo" class="status" hidden>
+            <h2 id="nomeInimigo"></h2>
+            <p>Vida do inimigo: <span id="vidaInimigo"></span>/<span id="vidaMaximaInimigo"></span></p>
+        </div>
+    </div>
+
+
+    <script>
+        let playerName = prompt("Digite seu nome: ")
+        document.getElementById("playerName").textContent = playerName
+        let vida = 100
+        let vidaJacare = 120
+        let vidaTungSahur = 110
+        let pocoes = 2
+
+        async function receberDano() {
+            let dano = Math.floor(Math.random() * 50) + 1
+            vida -= dano
+
+            if (vida < 0) {
+                vida = 0
+            }
+
+            atualizarInterface()
+            await esperarAtualizacao()
+
+            alert("Você recebeu " + dano + " de dano!\nSua vida atual é: " + vida)
+        }
+
+        function verificarVida() {
+            if (vida <= 0) {
+                alert("Você perdeu!")
+                return false
+            } else {
+                return true
+            }
+        }
+
+        function esperarAtualizacao() {
+            return new Promise(resolve => {
+                requestAnimationFrame(() => requestAnimationFrame(resolve))
+            })
+        }
+
+        async function atacarInimigo(nomeInimigo, vidaInimigo) {
+            let dano = Math.floor(Math.random() * 50) + 1
+
+            vidaInimigo = Math.max(0, vidaInimigo - dano)
+            document.getElementById("vidaInimigo").textContent = vidaInimigo
+            await esperarAtualizacao()
+
+            alert("Você atacou " + nomeInimigo + "!")
+            alert("Você causou " + dano + " de dano!\nVida restante do inimigo: " + vidaInimigo)
+
+            return vidaInimigo
+        }
+
+        async function combaterInimigo(nomeInimigo, vidaInimigo) {
+            document.getElementById("nomeInimigo").textContent = nomeInimigo
+            document.getElementById("vidaInimigo").textContent = vidaInimigo
+            document.getElementById("vidaMaximaInimigo").textContent = vidaInimigo
+            document.getElementById("cardInimigo").hidden = false
+            await esperarAtualizacao()
+
+            while (vida > 0 && vidaInimigo > 0) {
+                let acao = prompt("O que deseja fazer? Digite 'atacar' ou 'curar':").toLowerCase()
+                while (acao !== "atacar" && acao !== "curar") {
+                    alert("Resposta inválida")
+                    acao = prompt("O que deseja fazer? Digite 'atacar' ou 'curar':").toLowerCase()
+                }
+                if (acao == "atacar") {
+                    vidaInimigo = await atacarInimigo(nomeInimigo, vidaInimigo)
+                } else {
+                    await usarPocao()
+                }
+
+
+                if (vidaInimigo > 0) {
+                    alert(nomeInimigo + " ainda esta vivo e vai atacar!")
+                    await receberDano()
+
+                    if (!verificarVida()) {
+                        break
+                    }
+                }
+            }
+
+            if (vida > 0) {
+                alert("Parabens! Voce derrotou " + nomeInimigo + "!")
+            }
+
+            document.getElementById("cardInimigo").hidden = true
+            return vidaInimigo
+        }
+
+        async function usarPocao() {
+            if (pocoes > 0 && vida < 100) {
+                vida += 30
+
+                if (vida > 100) {
+                    vida = 100
+                }
+                pocoes--
+                atualizarInterface()
+                await esperarAtualizacao()
+                alert("Você utilizou uma poção!\nSua vida atual é: " + vida + "\nPoções restantes: " + pocoes)
+            } else if (pocoes <= 0) {
+                alert("Voce não possui mais poções!")
+            } else {
+                alert("Sua vida já esta cheia!")
+            }
+        }
+
+        function atualizarInterface() {
+            document.getElementById("vidaJogador").textContent = vida
+            document.getElementById("pocoesJogador").textContent = pocoes
+            document.querySelector(".barraVida").style.width = vida + "%"
+        }
+
+
+
+        async function iniciarAventura() {
+        alert("Bem vindo " + playerName + " a aventura do JavaScript!")
+        alert("Seu personagem é um aventureiro que recebeu uma missão: encontrar um reino perdido que desapareceu há centenas de anos.")
+        alert("Esse Mini Game é baseado em escolhas, você terá que tomar decisões para conseguir chegar ao reino perdido.")
+
+        let escolha1 = prompt("Você aceita a missão de encontrar o Reino Perdido? (sim ou não)").toLowerCase()
+        while (escolha1 !== "sim" && escolha1 !== "não") {
+            alert("Resposta inválida")
+            escolha1 = prompt("Você aceita a missão de encontrar o Reino Perdido? (sim ou não)").toLowerCase()
+        }
+        if (escolha1 === "sim") {
+            alert("Você aceitou a missão! Vamos começar a jornada.")
+        } else if (escolha1 === "não") {
+            alert("Você hesitou, mas a missão precisa ser cumprida. Sua aventura começa agora!")
+        }
+
+        let escolha2 = prompt("Você está em uma floresta densa e encontra um caminho bifurcado. Você segue o caminho da esquerda ou da direita? (esquerda ou direita)").toLowerCase()
+        while (escolha2 !== "esquerda" && escolha2 !== "direita") {
+            alert("Resposta inválida")
+            escolha2 = prompt("Você está em uma floresta densa e encontra um caminho bifurcado. Você segue o caminho da esquerda ou da direita? (esquerda ou direita)").toLowerCase()
+        }
+        if (escolha2 === "esquerda") {
+            alert("Voce seguiu o caminho da esquerda e encontrou um rio. Você precisa atravessar o rio para continuar sua jornada.")
+            let escolha3 = prompt("Você encontra uma ponte instável. Você decide atravessar a ponte ou procurar outro caminho? (atravessar ou procurar)").toLowerCase()
+            while (escolha3 !== "atravessar" && escolha3 !== "procurar") {
+                alert("Resposta inválida")
+                escolha3 = prompt("Você encontra uma ponte instável. Você decide atravessar a ponte ou procurar outro caminho? (atravessar ou procurar)").toLowerCase()
+            }
+            if (escolha3 === "atravessar") {
+                alert("Você caiu na água e a correnteza te levou para longe. Infelizmente, voce não conseguiu completar a amissão. Fim de Jogo.")
+            } else if (escolha3 === "procurar") {
+                alert("Voce encontrou um caminho alternativo e conseguiu atravessar o rio com segurança. Parabéns! Voce continuou sua jornada em busca do Reino Perdido.")
+                let escolha5 = prompt("Após atravessar o rio, você encontra um castelo abandonado. Deseja entrar para investigar? (sim ou não)").toLowerCase()
+                while (escolha5 !== "sim" && escolha5 !== "não") {
+                    alert("Resposta inválida")
+                    escolha5 = prompt("Após atravessar o rio, você encontra um castelo abandonado. Deseja entrar para investigar? (sim ou não)").toLowerCase()
+                }
+                if (escolha5 === "sim") {
+                    alert("Você entra no castelo e encontra uma passagem secreta que leva diretamente ao Reino Perdido. Parabéns, você completou sua missão!")
+                } else if (escolha5 === "não") {
+                    alert("Você decide continuar pela floresta, mas acaba se deparando com um Tung Tung Sahur maligno!")
+                    vidaTungSahur = await combaterInimigo("Tung Sahur", vidaTungSahur)
+                    if (vida > 0) {
+                        alert("Após derrotar o Tung Sahur, você encontra uma passagem escondida que leva a uma antiga vila.")
+                        let escolhaFinal1 = prompt("Você deseja seguir para a vila ou explorar uma torre misteriosa? (vila ou torre)").toLowerCase()
+                        while (escolhaFinal1 !== "vila" && escolhaFinal1 !== "torre") {
+                            alert("Resposta inválida!")
+                            escolhaFinal1 = prompt("Você deseja seguir para a vila ou explorar uma torre misteriosa? (vila ou torre)").toLowerCase()
+                        }
+                        if (escolhaFinal1 === "vila") {
+                            alert("Você chega à vila e descobre que os moradores conhecem a localização do Reino Perdido. Eles mostram o caminho e você finalmente completa sua missão! Parabéns!")
+                        } else {
+                            alert("Você explora a torre e encontra um mapa antigo que revela a localização do Reino Perdido. Com o mapa em mãos, você encontra o reino e conclui sua aventura com sucesso!")
+                        }
+                    } else {
+                        alert("Você foi derrotado pelo Tung Sahur. Sem forças para continuar, sua jornada termina na floresta. Fim de jogo!")
+                    }
+                }
+            }
+        } else if (escolha2 === "direita") {
+            alert("Voce seguiu o caminho da direita e encontrou uma caverna escura. Voce precisa decidir se entra na caverna ou procura outro caminho.")
+            let escolha4 = prompt("Voce decide entrar na caverna? (sim ou não)").toLowerCase()
+            while (escolha4 !== "sim" && escolha4 !== "não") {
+                alert("Resposta inválida")
+                escolha4 = prompt("Voce decide entrar na caverna? (sim ou não)").toLowerCase()
+            }
+            if (escolha4 === "sim") {
+                alert("Voce decide entrar na caverna e encontra um tesouro escondido! Parabéns, voce encontrou o Reino Perdido e completou sua missão com sucesso!")
+            } else if (escolha4 === "não") {
+                alert("Voce decide não entrar na caverna e continuar sua jornada, porém no caminho encontrou com um jacaré de 3 METROS!")
+                vidaJacare = await combaterInimigo("Jacaré de 3 metros", vidaJacare)
+
+                if (vida > 0) {
+                    alert("Você conseguiu derrotar o jacaré e sobreviveu ao encontro!")
+                    alert("Após a batalha, você percebe duas passagens no fundo da caverna.")
+                    let escolhaFinal2 = prompt("Você deseja seguir por uma passagem iluminada ou por um túnel escuro? (iluminada ou escuro)").toLowerCase()
+                    while (escolhaFinal2 !== "iluminada" && escolhaFinal2 !== "escuro") {
+                        alert("Resposta inválida!")
+                        escolhaFinal2 = prompt("Você deseja seguir por uma passagem iluminada ou por um túnel escuro? (iluminada ou escuro)").toLowerCase()
+                    }
+                    if (escolhaFinal2 === "iluminada") {
+                        alert("Você segue pela passagem iluminada e encontra uma enorme sala cheia de tesouros. No centro dela está a entrada do Reino Perdido! Você conseguiu completar sua missão!")
+                    } else {
+                        alert("Você atravessa o túnel escuro e encontra uma saída secreta que leva diretamente ao Reino Perdido. Depois de tantos desafios, sua aventura finalmente termina com sucesso!")
+                    }
+                } else {
+                    alert("O jacaré foi mais forte do que você imaginava. Ferido e sem forças, você não consegue escapar da caverna. Fim de jogo!")
+                }
+            }
+        }
+        }
+
+        iniciarAventura()
+    </script>
+
+</body>
+
+</html>
