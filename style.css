@@ -1,0 +1,169 @@
+ body {
+     background-color: #101827;
+     color: white;
+     font-family: Arial, sans-serif;
+     margin: 0;
+     padding: 30px;
+ }
+
+ .jogo {
+     max-width: 700px;
+     margin: 40px auto;
+ }
+
+ .title {
+     text-align: center;
+     color: #e5b75c;
+     font-size: 32px;
+     margin-bottom: 35px;
+ }
+
+ .status {
+     background-color: #1e293b;
+     padding: 25px;
+     border-radius: 12px;
+     margin-bottom: 20px;
+     border: 1px solid #475569;
+ }
+
+ .status h2 {
+     color: #e5b75c;
+ }
+
+ .barra-vida {
+     width: 100%;
+     height: 18px;
+     background-color: #475569;
+     border-radius: 10px;
+     overflow: hidden;
+ }
+
+ .barraVida {
+     width: 100%;
+     height: 100%;
+     background-color: #22c55e;
+     border-radius: 10px;
+ }
+
+ .mensagens h2 {
+     color: #e5b75c;
+ }
+
+
+ /* TELA DE BATALHA */
+
+ .tela-batalha {
+     margin-top: 25px;
+     padding: 20px;
+     background: #172337;
+     border: 2px solid #475569;
+     border-radius: 15px;
+ }
+
+ .campo-batalha {
+     display: flex;
+     flex-direction: column;
+     gap: 25px;
+     padding: 20px;
+     background: #26364b;
+     border-radius: 12px;
+ }
+
+ .personagem {
+     display: flex;
+     align-items: center;
+     gap: 20px;
+ }
+
+ .inimigo {
+     justify-content: flex-end;
+ }
+
+ .jogador {
+     justify-content: flex-start;
+ }
+
+ .imagem-personagem {
+     width: 110px;
+     height: 110px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 65px;
+     background: #334155;
+     border: 2px solid #64748b;
+     border-radius: 12px;
+ }
+
+ .status-batalha {
+     flex: 1;
+     max-width: 300px;
+     padding: 12px;
+     background: #1e293b;
+     border: 1px solid #64748b;
+     border-radius: 10px;
+ }
+
+ .status-batalha h2 {
+     margin-top: 0;
+     color: #e5b75c;
+ }
+
+ .status-batalha p {
+     margin-bottom: 8px;
+ }
+
+ .mensagem-batalha {
+     margin-top: 20px;
+     padding: 18px;
+     min-height: 25px;
+     background: #0f172a;
+     border: 2px solid #475569;
+     border-radius: 10px;
+     font-size: 17px;
+ }
+
+ .acoes-batalha {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 12px;
+     margin-top: 15px;
+ }
+
+ .acoes-batalha button {
+     padding: 14px;
+     border: none;
+     border-radius: 8px;
+     background: #334155;
+     color: white;
+     font-size: 16px;
+     font-weight: bold;
+     cursor: pointer;
+     transition: 0.2s;
+ }
+
+ .acoes-batalha button:hover {
+     background: #475569;
+     transform: scale(1.02);
+ }
+
+ .acoes-batalha button:disabled {
+     opacity: 0.5;
+     cursor: not-allowed;
+ }
+
+ @media (max-width: 500px) {
+     .personagem {
+         gap: 10px;
+     }
+
+     .imagem-personagem {
+         width: 75px;
+         height: 75px;
+         font-size: 45px;
+     }
+
+     .acoes-batalha {
+         grid-template-columns: 1fr;
+     }
+ }
