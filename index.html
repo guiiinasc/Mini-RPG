@@ -63,7 +63,7 @@
             <!-- AÇÕES -->
             <div class="acoes-batalha">
                 <button id="btnAtacar">Atacar</button>
-                <button id="btnEspecial">Poder especial</button>
+                <button id="btnPoder">Poder especial</button>
                 <button id="btnPocao">Usar poção</button>
                 <button id="btnDefender">Defender</button>
             </div>
@@ -79,6 +79,7 @@
         let vidaJacare = 120
         let vidaTungSahur = 110
         let pocoes = 2
+        let furia = 0
         let nomeInimigoAtual = ""
         let vidaInimigoAtual = 0
         let resolverBatalha = null
@@ -88,6 +89,11 @@
         async function receberDano() {
             let dano = Math.floor(Math.random() * 50) + 1
             vida -= dano
+            let vlFuria = Math.floor(dano / 2)
+            furia += vlFuria
+            if (furia > 50) {
+                furia = 50
+            }
             if (vida < 0) {
                 vida = 0
             }
@@ -204,6 +210,28 @@
             }
         }
 
+        // FURIA
+        async function usarPoder() {
+            if (furia >= 50) {
+                let dano = Math.floor(Math.random() * 31) + 50
+                vidaInimigoAtual = Math.max(0, vidaInimigoAtual - dano)
+                document.getElementById("vidaInimigo").textContent = vidaInimigoAtual
+                let vidaMaxima = nomeInimigoAtual === "Tung Sahur" ? 110 : 120
+                document.getElementById("barraVidaInimigo").style.width =
+                    (vidaInimigoAtual / vidaMaxima) * 100 + "%"
+                await esperarAtualizacao()
+                furia = 0
+                await atualizarInterface()
+                alert("Você atacou " + nomeInimigoAtual + " com a FURIA ativada!")
+                alert("Você causou " + dano + " de dano!\nVida restante do inimigo: " + vidaInimigoAtual)
+                return true
+            } else {
+                let faltaFuria = 50 - furia
+                alert("Voce ainda nao atingiu furia suficiente para usar esse poder, falta " + faltaFuria + " de furia!")
+                return false
+            }
+        }
+
         // ATUALIZAR INTERFACE
         function atualizarInterface() {
 
@@ -218,7 +246,7 @@
         botaoAtacar.addEventListener("click", async function () {
             console.log("Botão Atacar clicado!")
             if (resolverBatalha === null) {
-                return 
+                return
             }
             botaoAtacar.disabled = true
             vidaInimigoAtual = await atacarInimigo(
@@ -246,6 +274,25 @@
                 await turnoInimigo()
             }
             botaoPocao.disabled = false
+        })
+
+        let botaoPoder = document.getElementById("btnPoder")
+        botaoPoder.addEventListener("click", async function () {
+            console.log("Botao poder foi clicado")
+            if (resolverBatalha === null) {
+                return
+            }
+            botaoPoder.disabled = true
+            let poder = await usarPoder()
+            if (poder === true) {
+                if (vidaInimigoAtual <= 0) {
+                    alert("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
+                    finalizarBatalha()
+                } else {
+                    await turnoInimigo()
+                }
+            }
+            botaoPoder.disabled = false
         })
 
 
