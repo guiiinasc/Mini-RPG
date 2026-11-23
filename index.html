@@ -46,6 +46,9 @@
                         <div class="barra-vida">
                             <div id="barraVidaJogador" class="barraVida"></div>
                         </div>
+                         <div class="barra-furia">
+                            <div id="barraFuriaJogador" class="barraFuria"></div>
+                        </div>
                         <p>
                             Poções:
                             <span id="pocoesJogador">2</span>
@@ -239,6 +242,7 @@
             document.getElementById("pocoesJogador").textContent = pocoes
 
             document.getElementById("barraVidaJogador").style.width = vida + "%"
+            document.getElementById("barraFuriaJogador").style.width = (furia / 50) * 100 + "%"
         }
 
         // EVENTOS DOS BOTÕES
