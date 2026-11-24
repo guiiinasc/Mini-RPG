@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aventura: Reino Perdido</title>
     <!-- Fontes com cara de jogo antigo (Google Fonts) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,16 +20,20 @@
             <p class="texto">Qual é o seu nome, aventureiro?</p>
             <input id="campoNome" type="text" maxlength="15" placeholder="Digite seu nome">
             <div class="opcoes">
-                <button id="btnComecar">Começar ▶</button>
+                <button id="btnComecar">Começar</button>
             </div>
         </div>
 
         <!-- TELA DE BATALHA -->
         <div id="telaBatalha" class="campo-batalha" hidden>
 
+            <!-- CENÁRIO -->
+            <div class="ceu"></div>
+            <div class="grama"></div>
+
             <!-- INIMIGO -->
             <div class="personagem inimigo">
-                <div class="imagem-personagem" id="imagemInimigo">
+                <div class="imagem-personagem">
                     <img id="fotoInimigo" src="" alt="Imagem do inimigo">
                 </div>
                 <div class="status-batalha">
@@ -48,7 +50,7 @@
 
             <!-- JOGADOR -->
             <div class="personagem jogador">
-                <div class="imagem-personagem" id="imagemJogador">
+                <div class="imagem-personagem">
                     <img id="fotoJogador" src="img/jogador.svg" alt="Imagem do jogador">
                 </div>
                 <div class="status-batalha">

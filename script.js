@@ -9,10 +9,10 @@ let pocoes = 2
 let furia = 0
 let nomeInimigoAtual = ""
 let vidaInimigoAtual = 0
-let vidaMaximaInimigoAtual = 0 
+let vidaMaximaInimigoAtual = 0
 let resolverBatalha = null
 
-// ========== CAIXA DE TEXTO ==========
+//  CAIXA DE TEXTO
 
 // MOSTRA UM TEXTO COM BOTÕES E ESPERA O JOGADOR CLICAR EM UM.
 // Devolve o texto do botão que foi clicado.
@@ -39,7 +39,7 @@ function mostrarMensagem(texto) {
     return escolher(texto, ["Continuar"])
 }
 
-// ========== BATALHA ==========
+//  BATALHA
 
 // TRAVAR (true) OU DESTRAVAR (false) OS BOTÕES DA BATALHA
 function travarBotoes(travar) {
@@ -51,8 +51,53 @@ function travarBotoes(travar) {
 // VEZ DO JOGADOR ESCOLHER UMA AÇÃO
 function vezDoJogador() {
     document.getElementById("texto").textContent = "O que " + playerName + " vai fazer?"
-    document.getElementById("opcoes").innerHTML = ""
     travarBotoes(false)
+}
+
+// ATUALIZAR INTERFACE (jogador e inimigo)
+function atualizarInterface() {
+    document.getElementById("vidaJogador").textContent = vida
+    document.getElementById("pocoesJogador").textContent = pocoes
+    document.getElementById("furiaJogador").textContent = furia
+    document.getElementById("barraVidaJogador").style.width = vida + "%"
+    document.getElementById("barraFuriaJogador").style.width = (furia / 50) * 100 + "%"
+
+    document.getElementById("vidaInimigo").textContent = vidaInimigoAtual
+    document.getElementById("barraVidaInimigo").style.width =
+        (vidaInimigoAtual / vidaMaximaInimigoAtual) * 100 + "%"
+}
+
+// COMBATER INIMIGO
+function combaterInimigo(nomeInimigo, vidaInimigo, imagemInimigo) {
+    nomeInimigoAtual = nomeInimigo
+    vidaInimigoAtual = vidaInimigo
+    vidaMaximaInimigoAtual = vidaInimigo
+
+    document.getElementById("telaBatalha").hidden = false
+    document.getElementById("acoesBatalha").hidden = false
+
+    document.getElementById("nomeInimigo").textContent = nomeInimigo
+    document.getElementById("vidaMaximaInimigo").textContent = vidaInimigo
+    document.getElementById("fotoInimigo").src = imagemInimigo
+
+    atualizarInterface()
+    vezDoJogador()
+    document.getElementById("texto").textContent =
+        nomeInimigo + " apareceu! O que " + playerName + " vai fazer?"
+
+    // Aguarda o jogador vencer ou perder
+    return new Promise(resolve => {
+        resolverBatalha = resolve
+    })
+}
+
+// FINALIZAR BATALHA
+function finalizarBatalha() {
+    document.getElementById("telaBatalha").hidden = true
+    document.getElementById("acoesBatalha").hidden = true
+
+    resolverBatalha()
+    resolverBatalha = null
 }
 
 // RECEBER DANO
@@ -71,105 +116,40 @@ async function receberDano() {
     await mostrarMensagem(nomeInimigoAtual + " atacou!\nVocê recebeu " + dano + " de dano!")
 }
 
-// VERIFICAR VIDA DO JOGADOR
-async function verificarVida() {
+// TURNO DO INIMIGO
+async function turnoInimigo() {
+    await receberDano()
+
     if (vida <= 0) {
         document.getElementById("fotoJogador").src = "img/morto.svg"
         await mostrarMensagem("Você perdeu!")
+        finalizarBatalha()
+    }
+}
 
-        return false
+// DEPOIS DO ATAQUE DO JOGADOR: O INIMIGO MORREU OU É A VEZ DELE?
+async function depoisDoAtaque() {
+    if (vidaInimigoAtual <= 0) {
+        document.getElementById("fotoInimigo").src = "img/morto.svg"
+        await mostrarMensagem("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
+        finalizarBatalha()
     } else {
-        return true
+        await turnoInimigo()
     }
 }
 
 // ATACAR INIMIGO
-async function atacarInimigo(nomeInimigo, vidaInimigo) {
+async function atacarInimigo() {
     let dano = Math.floor(Math.random() * 16) + 10
-    let critico = false
+    let inicioMensagem = ""
     if (Math.random() < 0.2) {
         dano += dano
-        critico = true
+        inicioMensagem = "GOLPE CRÍTICO! "
     }
 
-    vidaInimigo = Math.max(0, vidaInimigo - dano)
-    document.getElementById("vidaInimigo").textContent = vidaInimigo
-    document.getElementById("barraVidaInimigo").style.width =
-        (vidaInimigo / vidaMaximaInimigoAtual) * 100 + "%"
-    if (critico === true) {
-        await mostrarMensagem("GOLPE CRÍTICO! Você atacou " + nomeInimigo + " e causou " + dano + " de dano!")
-    } else{
-        await mostrarMensagem("Você atacou " + nomeInimigo + " e causou " + dano + " de dano!")
-    }
-    return vidaInimigo
-}
-
-// COMBATER INIMIGO
-async function combaterInimigo(nomeInimigo, vidaInimigo) {
-
-    nomeInimigoAtual = nomeInimigo
-    vidaInimigoAtual = vidaInimigo
-    vidaMaximaInimigoAtual = vidaInimigo
-
-    document.getElementById("telaBatalha").hidden = false
-    document.getElementById("acoesBatalha").hidden = false
-
-    document.getElementById("nomeInimigo").textContent = nomeInimigo
-    document.getElementById("vidaInimigo").textContent = vidaInimigo
-    document.getElementById("vidaMaximaInimigo").textContent = vidaInimigo
-
-    document.getElementById("barraVidaInimigo").style.width = "100%"
-
+    vidaInimigoAtual = Math.max(0, vidaInimigoAtual - dano)
     atualizarInterface()
-
-    // IMAGEM DO INIMIGO
-    if (nomeInimigo === "Tung Sahur") {
-        document.getElementById("fotoInimigo").src = "img/tungsahur.svg"
-    } else if(nomeInimigo === "Jacaré de 3 metros"){
-        document.getElementById("fotoInimigo").src = "img/jacare.svg"
-    } else if(nomeInimigo === "Cavaleiro"){
-        document.getElementById("fotoInimigo").src = "img/cavaleiro.svg"
-    } else {
-        document.getElementById("fotoInimigo").src = "img/morcego.svg"
-    }
-
-    vezDoJogador()
-    document.getElementById("texto").textContent =
-        nomeInimigo + " apareceu! O que " + playerName + " vai fazer?"
-
-    // Aguarda o jogador vencer ou perder
-    return new Promise(resolve => {
-        resolverBatalha = resolve
-    })
-}
-
-// FINALIZAR BATALHA
-function finalizarBatalha() {
-
-    document.getElementById("telaBatalha").hidden = true
-    document.getElementById("acoesBatalha").hidden = true
-
-    let resolver = resolverBatalha
-    resolverBatalha = null
-
-    if (resolver) {
-        resolver(vidaInimigoAtual)
-    }
-}
-
-// TURNO DO INIMIGO
-async function turnoInimigo() {
-
-    if (vidaInimigoAtual <= 0 || vida <= 0) {
-        return
-    }
-
-    await receberDano()
-
-    if (vida <= 0) {
-        await verificarVida()
-        finalizarBatalha()
-    }
+    await mostrarMensagem(inicioMensagem + "Você atacou " + nomeInimigoAtual + " e causou " + dano + " de dano!")
 }
 
 // USAR POÇÃO
@@ -197,9 +177,6 @@ async function usarPoder() {
     if (furia >= 50) {
         let dano = Math.floor(Math.random() * 31) + 50
         vidaInimigoAtual = Math.max(0, vidaInimigoAtual - dano)
-        document.getElementById("vidaInimigo").textContent = vidaInimigoAtual
-        document.getElementById("barraVidaInimigo").style.width =
-            (vidaInimigoAtual / vidaMaximaInimigoAtual) * 100 + "%"
         furia = 0
         atualizarInterface()
         await mostrarMensagem("FÚRIA ATIVADA! Você atacou " + nomeInimigoAtual + " e causou " + dano + " de dano!")
@@ -211,36 +188,12 @@ async function usarPoder() {
     }
 }
 
-// ATUALIZAR INTERFACE
-function atualizarInterface() {
-
-    document.getElementById("vidaJogador").textContent = vida
-    document.getElementById("pocoesJogador").textContent = pocoes
-    document.getElementById("furiaJogador").textContent = furia
-
-    document.getElementById("barraVidaJogador").style.width = vida + "%"
-    document.getElementById("barraFuriaJogador").style.width = (furia / 50) * 100 + "%"
-}
-
 // EVENTOS DOS BOTÕES
 let botaoAtacar = document.getElementById("btnAtacar")
 botaoAtacar.addEventListener("click", async function () {
-    console.log("Botão Atacar clicado!")
-    if (resolverBatalha === null) {
-        return
-    }
     travarBotoes(true)
-    vidaInimigoAtual = await atacarInimigo(
-        nomeInimigoAtual,
-        vidaInimigoAtual
-    )
-    if (vidaInimigoAtual <= 0) {
-        document.getElementById("fotoInimigo").src = "img/morto.svg"
-        await mostrarMensagem("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
-        finalizarBatalha()
-    } else {
-        await turnoInimigo()
-    }
+    await atacarInimigo()
+    await depoisDoAtaque()
     // Se a batalha ainda não acabou, volta a ser a vez do jogador
     if (resolverBatalha !== null) {
         vezDoJogador()
@@ -249,10 +202,6 @@ botaoAtacar.addEventListener("click", async function () {
 
 let botaoPocao = document.getElementById("btnPocao")
 botaoPocao.addEventListener("click", async function () {
-    console.log("botao cricado")
-    if (resolverBatalha === null) {
-        return
-    }
     travarBotoes(true)
     let curou = await usarPocao()
     if (curou === true) {
@@ -265,20 +214,10 @@ botaoPocao.addEventListener("click", async function () {
 
 let botaoPoder = document.getElementById("btnPoder")
 botaoPoder.addEventListener("click", async function () {
-    console.log("Botao poder foi clicado")
-    if (resolverBatalha === null) {
-        return
-    }
     travarBotoes(true)
-    let poder = await usarPoder()
-    if (poder === true) {
-        if (vidaInimigoAtual <= 0) {
-            document.getElementById("fotoInimigo").src = "img/morto.svg"
-            await mostrarMensagem("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
-            finalizarBatalha()
-        } else {
-            await turnoInimigo()
-        }
+    let usou = await usarPoder()
+    if (usou === true) {
+        await depoisDoAtaque()
     }
     if (resolverBatalha !== null) {
         vezDoJogador()
@@ -308,7 +247,7 @@ async function iniciarAventura() {
     let escolha1 = await escolher("Você aceita a missão de encontrar o Reino Perdido?", ["Sim", "Não"])
     if (escolha1 === "Sim") {
         await mostrarMensagem("Você aceitou a missão! Vamos começar a jornada.")
-    } else if (escolha1 === "Não") {
+    } else {
         await mostrarMensagem("Você hesitou, mas a missão precisa ser cumprida. Sua aventura começa agora!")
     }
 
@@ -319,24 +258,24 @@ async function iniciarAventura() {
         let escolha3 = await escolher("Você encontra uma ponte instável. Você decide atravessar a ponte ou procurar outro caminho?", ["Atravessar", "Procurar"])
         if (escolha3 === "Atravessar") {
             await mostrarMensagem("Você caiu na água e a correnteza te levou para longe. Infelizmente, você não conseguiu completar a missão. Fim de Jogo.")
-        } else if (escolha3 === "Procurar") {
+        } else {
             await mostrarMensagem("Você encontrou um caminho alternativo e conseguiu atravessar o rio com segurança. Parabéns! Você continuou sua jornada em busca do Reino Perdido.")
 
             let escolha5 = await escolher("Após atravessar o rio, você encontra um castelo abandonado. Deseja entrar para investigar?", ["Sim", "Não"])
             if (escolha5 === "Sim") {
                 await mostrarMensagem("Você entra no castelo abandonado. Os corredores estão escuros e silenciosos... De repente, um Cavaleiro Fantasma surge das sombras e bloqueia a passagem!")
-                vidaCavaleiro = await combaterInimigo("Cavaleiro", vidaCavaleiro)
-                if(vida > 0){
+                await combaterInimigo("Cavaleiro Fantasma", vidaCavaleiro, "img/cavaleiro.svg")
+                if (vida > 0) {
                     await mostrarMensagem("O Cavaleiro Fantasma desaparece no ar. Atrás dele, você encontra uma passagem secreta que leva diretamente ao Reino Perdido. Parabéns, você completou sua missão!")
-                } else{
+                } else {
                     await mostrarMensagem("O Cavaleiro Fantasma era forte demais. Sem forças para continuar, sua jornada termina nos corredores do castelo. Fim de jogo!")
                 }
-            } else if (escolha5 === "Não") {
+            } else {
                 await mostrarMensagem("Você decide continuar pela floresta, mas acaba se deparando com um Tung Tung Sahur maligno!")
-                vidaTungSahur = await combaterInimigo("Tung Sahur", vidaTungSahur)
+                await combaterInimigo("Tung Sahur", vidaTungSahur, "img/tungsahur.svg")
                 if (vida > 0) {
                     await mostrarMensagem("Após derrotar o Tung Sahur, você encontra uma passagem escondida que leva a uma antiga vila.")
-                   
+
                     let escolhaFinal1 = await escolher("Você deseja seguir para a vila ou explorar uma torre misteriosa?", ["Vila", "Torre"])
                     if (escolhaFinal1 === "Vila") {
                         await mostrarMensagem("Você chega à vila e descobre que os moradores conhecem a localização do Reino Perdido. Eles mostram o caminho e você finalmente completa sua missão! Parabéns!")
@@ -349,21 +288,21 @@ async function iniciarAventura() {
             }
         }
 
-    } else if (escolha2 === "Direita") {
+    } else {
         await mostrarMensagem("Você seguiu o caminho da direita e encontrou uma caverna escura. Você precisa decidir se entra na caverna ou procura outro caminho.")
 
         let escolha4 = await escolher("Você decide entrar na caverna?", ["Sim", "Não"])
         if (escolha4 === "Sim") {
             await mostrarMensagem("Você decide entrar na caverna escura. No fundo, algo brilha: um tesouro! Mas, antes que você chegue perto, um Morcego Gigante desce do teto e parte para cima de você!")
-            vidaMorcego = await combaterInimigo("Morcego", vidaMorcego)
-            if(vida > 0){
+            await combaterInimigo("Morcego Gigante", vidaMorcego, "img/morcego.svg")
+            if (vida > 0) {
                 await mostrarMensagem("O Morcego Gigante foge voando pela escuridão. Você pega o tesouro e, atrás dele, descobre a entrada do Reino Perdido. Parabéns, você completou sua missão com sucesso!")
-            } else{
+            } else {
                 await mostrarMensagem("O Morcego Gigante foi rápido demais para você. Ferido e sem forças, você não consegue sair da caverna. Fim de jogo!")
             }
-        } else if (escolha4 === "Não") {
+        } else {
             await mostrarMensagem("Você decide não entrar na caverna e continuar sua jornada, porém no caminho encontrou com um jacaré de 3 METROS!")
-            vidaJacare = await combaterInimigo("Jacaré de 3 metros", vidaJacare)
+            await combaterInimigo("Jacaré de 3 metros", vidaJacare, "img/jacare.svg")
             if (vida > 0) {
                 await mostrarMensagem("Você conseguiu derrotar o jacaré e sobreviveu ao encontro!")
                 await mostrarMensagem("Após a batalha, você percebe duas passagens no fundo da caverna.")
@@ -380,6 +319,6 @@ async function iniciarAventura() {
         }
     }
 
-    await escolher("Obrigado por jogar, " + playerName + "!", ["Jogar de novo "])
+    await escolher("Obrigado por jogar, " + playerName + "!", ["Jogar de novo"])
     location.reload()
 }
