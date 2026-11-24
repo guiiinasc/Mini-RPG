@@ -1,186 +1,241 @@
- body {
-     background-color: #101827;
-     color: white;
-     font-family: Arial, sans-serif;
-     margin: 0;
-     padding: 30px;
- }
+/* ========== CORES DO JOGO ========== */
+:root {
+    --tinta: #1b1b2f;      /* contornos e texto escuro */
+    --papel: #f8f4e3;      /* fundo das caixas */
+    --papel-borda: #c9b98a;
+    --dourado: #e5b75c;
+    --vida: #22c55e;
+    --furia: #f97316;
+}
 
- .jogo {
-     max-width: 700px;
-     margin: 40px auto;
- }
+/* Garante que o atributo hidden sempre esconda o elemento */
+[hidden] {
+    display: none !important;
+}
 
- .title {
-     text-align: center;
-     color: #e5b75c;
-     font-size: 32px;
-     margin-bottom: 35px;
- }
+body {
+    margin: 0;
+    padding: 20px 16px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background: radial-gradient(circle at top, #24345a, #0b1020 70%);
+    color: white;
+    font-family: "VT323", monospace;
+}
 
- .status {
-     background-color: #1e293b;
-     padding: 25px;
-     border-radius: 12px;
-     margin-bottom: 20px;
-     border: 1px solid #475569;
- }
+.jogo {
+    max-width: 720px;
+    margin: 0 auto;
+}
 
- .status h2 {
-     color: #e5b75c;
- }
+.titulo {
+    font-family: "Press Start 2P", monospace;
+    font-size: 22px;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--dourado);
+    text-shadow: 3px 3px 0 #7c2d12;
+    margin: 16px 0 28px;
+}
 
- .barra-vida {
-     width: 100%;
-     height: 18px;
-     background-color: #475569;
-     border-radius: 10px;
-     overflow: hidden;
- }
+/* ========== CAMPO DE BATALHA ========== */
 
- .barraVida {
-     width: 100%;
-     height: 100%;
-     background-color: #22c55e;
-     border-radius: 10px;
- }
+.campo-batalha {
+    position: relative;
+    height: 360px;
+    border: 4px solid var(--tinta);
+    border-radius: 12px;
+    overflow: hidden;
+    /* céu em cima, grama embaixo */
+    background: linear-gradient(#7cc4e4 0%, #bfe3f5 48%, #8fd19e 48%, #4caf6e 100%);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.5);
+}
 
- .barra-furia {
-     width: 100%;
-     height: 18px;
-     background-color: #475569;
-     border-radius: 10px;
-     overflow: hidden;
-     margin-top: 8px;
- }
+.personagem {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
 
- .barraFuria {
-     width: 0%;
-     height: 100%;
-     background-color: #c52222;
-     border-radius: 10px;
- }
+/* inimigo em cima à direita, com o status do lado esquerdo */
+.inimigo {
+    top: 20px;
+    right: 20px;
+    flex-direction: row-reverse;
+}
 
+/* jogador embaixo à esquerda */
+.jogador {
+    bottom: 16px;
+    left: 20px;
+}
 
- .mensagens h2 {
-     color: #e5b75c;
- }
+.imagem-personagem {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
 
+/* "plataforma" de grama embaixo de cada personagem */
+.imagem-personagem::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 28px;
+    background: #2f7d4f;
+    border-radius: 50%;
+}
 
- /* TELA DE BATALHA */
+.imagem-personagem img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
- .tela-batalha {
-     margin-top: 25px;
-     padding: 20px;
-     background: #172337;
-     border: 2px solid #475569;
-     border-radius: 15px;
- }
+/* ========== CAIXAS DE STATUS ========== */
 
- .campo-batalha {
-     display: flex;
-     flex-direction: column;
-     gap: 25px;
-     padding: 20px;
-     background: #26364b;
-     border-radius: 12px;
- }
+.status-batalha {
+    width: 230px;
+    padding: 10px 12px;
+    background: var(--papel);
+    color: var(--tinta);
+    border: 4px solid var(--tinta);
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+}
 
- .personagem {
-     display: flex;
-     align-items: center;
-     gap: 20px;
- }
+.status-batalha h2 {
+    font-family: "Press Start 2P", monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    margin: 0 0 6px;
+}
 
- .inimigo {
-     justify-content: flex-end;
- }
+.status-batalha p {
+    margin: 4px 0 2px;
+    font-size: 20px;
+}
 
- .jogador {
-     justify-content: flex-start;
- }
+.rotulo {
+    font-family: "Press Start 2P", monospace;
+    font-size: 8px;
+    margin-right: 4px;
+}
 
- .imagem-personagem {
-     width: 110px;
-     height: 110px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-size: 65px;
-     background: #334155;
-     border: 2px solid #64748b;
-     border-radius: 12px;
- }
+/* ========== BARRAS ========== */
 
- .status-batalha {
-     flex: 1;
-     max-width: 300px;
-     padding: 12px;
-     background: #1e293b;
-     border: 1px solid #64748b;
-     border-radius: 10px;
- }
+.barra-vida,
+.barra-furia {
+    width: 100%;
+    height: 12px;
+    background-color: #3f3f46;
+    border: 2px solid var(--tinta);
+    border-radius: 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
 
- .status-batalha h2 {
-     margin-top: 0;
-     color: #e5b75c;
- }
+.barraVida {
+    width: 100%;
+    height: 100%;
+    background-color: var(--vida);
+    transition: width 0.4s;
+}
 
- .status-batalha p {
-     margin-bottom: 8px;
- }
+.barraFuria {
+    width: 0%;
+    height: 100%;
+    background-color: var(--furia);
+    transition: width 0.4s;
+}
 
- .mensagem-batalha {
-     margin-top: 20px;
-     padding: 18px;
-     min-height: 25px;
-     background: #0f172a;
-     border: 2px solid #475569;
-     border-radius: 10px;
-     font-size: 17px;
- }
+/* ========== CAIXA DE TEXTO ========== */
 
- .acoes-batalha {
-     display: grid;
-     grid-template-columns: 1fr 1fr;
-     gap: 12px;
-     margin-top: 15px;
- }
+.caixa-texto {
+    margin-top: 16px;
+    padding: 16px 18px;
+    min-height: 100px;
+    background: var(--papel);
+    color: var(--tinta);
+    border: 4px solid var(--tinta);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 3px var(--papel-borda), 0 6px 0 rgba(0, 0, 0, 0.5);
+}
 
- .acoes-batalha button {
-     padding: 14px;
-     border: none;
-     border-radius: 8px;
-     background: #334155;
-     color: white;
-     font-size: 16px;
-     font-weight: bold;
-     cursor: pointer;
-     transition: 0.2s;
- }
+.texto {
+    margin: 0 0 12px;
+    font-size: 26px;
+    line-height: 1.15;
+    white-space: pre-line; /* faz o \n pular linha */
+}
 
- .acoes-batalha button:hover {
-     background: #475569;
-     transform: scale(1.02);
- }
+.opcoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
 
- .acoes-batalha button:disabled {
-     opacity: 0.5;
-     cursor: not-allowed;
- }
+#campoNome {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    font-family: "VT323", monospace;
+    font-size: 26px;
+    color: var(--tinta);
+    background: white;
+    border: 3px solid var(--tinta);
+    border-radius: 8px;
+}
 
- @media (max-width: 500px) {
-     .personagem {
-         gap: 10px;
-     }
+/* ========== BOTÕES ========== */
 
-     .imagem-personagem {
-         width: 75px;
-         height: 75px;
-         font-size: 45px;
-     }
+button {
+    padding: 12px 16px;
+    font-family: "Press Start 2P", monospace;
+    font-size: 11px;
+    color: var(--tinta);
+    background: var(--dourado);
+    border: 3px solid var(--tinta);
+    border-radius: 8px;
+    box-shadow: 0 4px 0 var(--tinta);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
 
-     .acoes-batalha {
-         grid-template-columns: 1fr;
-     }
- }
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--tinta);
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.acoes-batalha {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.acoes-batalha button {
+    padding: 16px;
+    font-size: 13px;
+}
+
+/* uma cor para cada ação */
+#btnAtacar   { background: #f87171; }
+#btnPoder    { background: var(--furia); }
+#btnPocao    { background: #4ade80; }
+

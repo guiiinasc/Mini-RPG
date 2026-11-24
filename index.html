@@ -5,448 +5,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aventura: Reino Perdido</title>
+    <!-- Fontes com cara de jogo antigo (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
+    
     <div class="jogo">
-        <h1 class="title">Aventura: Reino Perdido</h1>
-        <div id="telaBatalha" class="tela-batalha" hidden>
-            <div class="campo-batalha">
+        <h1 class="titulo">Aventura:<br>Reino Perdido</h1>
 
-                <!-- INIMIGO -->
-                <div class="personagem inimigo">
-                    <div class="imagem-personagem" id="imagemInimigo">
-                        <img src="" alt="Imagem do inimigo">
-                    </div>
-                    <div class="status-batalha">
-                        <h2 id="nomeInimigo"></h2>
-                        <p>
-                            Vida:
-                            <span id="vidaInimigo"></span>/<span id="vidaMaximaInimigo"></span>
-                        </p>
-                        <div class="barra-vida">
-                            <div id="barraVidaInimigo" class="barraVida"></div>
-                        </div>
+        <!-- TELA INICIAL (pede o nome do jogador) -->
+        <div id="telaInicio" class="caixa-texto">
+            <p class="texto">Qual é o seu nome, aventureiro?</p>
+            <input id="campoNome" type="text" maxlength="15" placeholder="Digite seu nome">
+            <div class="opcoes">
+                <button id="btnComecar">Começar ▶</button>
+            </div>
+        </div>
+
+        <!-- TELA DE BATALHA -->
+        <div id="telaBatalha" class="campo-batalha" hidden>
+
+            <!-- INIMIGO -->
+            <div class="personagem inimigo">
+                <div class="imagem-personagem" id="imagemInimigo">
+                    <img id="fotoInimigo" src="" alt="Imagem do inimigo">
+                </div>
+                <div class="status-batalha">
+                    <h2 id="nomeInimigo"></h2>
+                    <p>
+                        <span class="rotulo">HP</span>
+                        <span id="vidaInimigo"></span>/<span id="vidaMaximaInimigo"></span>
+                    </p>
+                    <div class="barra-vida">
+                        <div id="barraVidaInimigo" class="barraVida"></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- JOGADOR -->
-                <div class="personagem jogador">
-                    <div class="imagem-personagem" id="imagemJogador">
-                        <img src="" alt="Imagem do jogador">
-                    </div>
-                    <div class="status-batalha">
-                        <h2 id="playerName">Aventureiro</h2>
-                        <p>
-                            Vida:
-                            <span id="vidaJogador">100</span>/100
-                        </p>
-                        <div class="barra-vida">
-                            <div id="barraVidaJogador" class="barraVida"></div>
-                        </div>
-                         <div class="barra-furia">
-                            <div id="barraFuriaJogador" class="barraFuria"></div>
-                        </div>
-                        <p>
-                            Poções:
-                            <span id="pocoesJogador">2</span>
-                        </p>
-                    </div>
+            <!-- JOGADOR -->
+            <div class="personagem jogador">
+                <div class="imagem-personagem" id="imagemJogador">
+                    <img id="fotoJogador" src="img/jogador.svg" alt="Imagem do jogador">
                 </div>
-
+                <div class="status-batalha">
+                    <h2 id="playerName">Aventureiro</h2>
+                    <p>
+                        <span class="rotulo">HP</span>
+                        <span id="vidaJogador">100</span>/100
+                    </p>
+                    <div class="barra-vida">
+                        <div id="barraVidaJogador" class="barraVida"></div>
+                    </div>
+                    <p>
+                        <span class="rotulo">FÚRIA</span>
+                        <span id="furiaJogador">0</span>/50
+                    </p>
+                    <div class="barra-furia">
+                        <div id="barraFuriaJogador" class="barraFuria"></div>
+                    </div>
+                    <p>
+                        <span class="rotulo">POÇÕES</span>
+                        <span id="pocoesJogador">2</span>
+                    </p>
+                </div>
             </div>
 
-            <!-- MENSAGEM DA BATALHA -->
-            <div class="mensagem-batalha" id="mensagemBatalha">
-                O que você deseja fazer?
-            </div>
+        </div>
 
-            <!-- AÇÕES -->
-            <div class="acoes-batalha">
-                <button id="btnAtacar">Atacar</button>
-                <button id="btnPoder">Poder especial</button>
-                <button id="btnPocao">Usar poção</button>
-                <button id="btnDefender">Defender</button>
-            </div>
+        <!-- CAIXA DE TEXTO (história e mensagens da batalha) -->
+        <div id="caixaTexto" class="caixa-texto" hidden>
+            <p id="texto" class="texto"></p>
+            <div id="opcoes" class="opcoes"></div>
+        </div>
+
+        <!-- AÇÕES DA BATALHA -->
+        <div id="acoesBatalha" class="acoes-batalha" hidden>
+            <button id="btnAtacar">Atacar</button>
+            <button id="btnPoder">Fúria</button>
+            <button id="btnPocao">Poção</button>
         </div>
     </div>
 
-    <script>
-        // VARIÁVEIS DO JOGADOR
-        let playerName = prompt("Digite seu nome: ")
-        document.getElementById("playerName").textContent = playerName
-
-        let vida = 100
-        let vidaJacare = 120
-        let vidaTungSahur = 110
-        let pocoes = 2
-        let furia = 0
-        let nomeInimigoAtual = ""
-        let vidaInimigoAtual = 0
-        let resolverBatalha = null
-        let defesaAtiva = false
-
-        // RECEBER DANO
-        async function receberDano() {
-            let dano = Math.floor(Math.random() * 50) + 1
-            vida -= dano
-            let vlFuria = Math.floor(dano / 2)
-            furia += vlFuria
-            if (furia > 50) {
-                furia = 50
-            }
-            if (vida < 0) {
-                vida = 0
-            }
-            atualizarInterface()
-            await esperarAtualizacao()
-            alert("Você recebeu " + dano + " de dano!\nSua vida atual é: " + vida)
-        }
-
-        // VERIFICAR VIDA DO JOGADOR
-        function verificarVida() {
-            if (vida <= 0) {
-                alert("Você perdeu!")
-                return false
-            } else {
-                return true
-            }
-        }
-
-        // AGUARDAR ATUALIZAÇÃO DA TELA
-        function esperarAtualizacao() {
-            return new Promise(resolve => {
-                requestAnimationFrame(() => requestAnimationFrame(resolve))
-            })
-        }
-
-        // ATACAR INIMIGO
-        async function atacarInimigo(nomeInimigo, vidaInimigo) {
-            let dano = Math.floor(Math.random() * 50) + 1
-            vidaInimigo = Math.max(0, vidaInimigo - dano)
-            document.getElementById("vidaInimigo").textContent = vidaInimigo
-            let vidaMaxima = nomeInimigo === "Tung Sahur" ? 110 : 120
-            document.getElementById("barraVidaInimigo").style.width =
-                (vidaInimigo / vidaMaxima) * 100 + "%"
-            await esperarAtualizacao()
-            alert("Você atacou " + nomeInimigo + "!")
-            alert("Você causou " + dano + " de dano!\nVida restante do inimigo: " + vidaInimigo)
-            return vidaInimigo
-        }
-
-        // COMBATER INIMIGO
-        async function combaterInimigo(nomeInimigo, vidaInimigo) {
-
-            nomeInimigoAtual = nomeInimigo
-            vidaInimigoAtual = vidaInimigo
-
-            document.getElementById("telaBatalha").hidden = false
-
-            document.getElementById("nomeInimigo").textContent = nomeInimigo
-            document.getElementById("vidaInimigo").textContent = vidaInimigo
-            document.getElementById("vidaMaximaInimigo").textContent = vidaInimigo
-
-            document.getElementById("barraVidaInimigo").style.width = "100%"
-
-            atualizarInterface()
-
-            document.getElementById("mensagemBatalha").textContent =
-                "Um " + nomeInimigo + " apareceu! Escolha sua ação."
-
-            // Aguarda o jogador vencer ou perder
-            return new Promise(resolve => {
-                resolverBatalha = resolve
-            })
-        }
-
-        // FINALIZAR BATALHA
-        function finalizarBatalha() {
-
-            document.getElementById("telaBatalha").hidden = true
-
-            let resolver = resolverBatalha
-            resolverBatalha = null
-
-            if (resolver) {
-                resolver(vidaInimigoAtual)
-            }
-        }
-
-        // TURNO DO INIMIGO
-        async function turnoInimigo() {
-
-            if (vidaInimigoAtual <= 0 || vida <= 0) {
-                return
-            }
-
-            document.getElementById("mensagemBatalha").textContent =
-                nomeInimigoAtual + " está atacando!"
-
-            await receberDano()
-
-            if (vida <= 0) {
-                verificarVida()
-                finalizarBatalha()
-            }
-        }
-
-        // USAR POÇÃO
-        async function usarPocao() {
-            if (pocoes > 0 && vida < 100) {
-                vida += 30
-                if (vida > 100) {
-                    vida = 100
-                }
-                pocoes--
-                atualizarInterface()
-                await esperarAtualizacao()
-                alert("Você utilizou uma poção!\nSua vida atual é: " + vida + "\nPoções restantes: " + pocoes)
-                return true
-            } else if (pocoes <= 0) {
-                alert("Você não possui mais poções!")
-                return false
-            } else {
-                alert("Sua vida já está cheia!")
-                return false
-            }
-        }
-
-        // FURIA
-        async function usarPoder() {
-            if (furia >= 50) {
-                let dano = Math.floor(Math.random() * 31) + 50
-                vidaInimigoAtual = Math.max(0, vidaInimigoAtual - dano)
-                document.getElementById("vidaInimigo").textContent = vidaInimigoAtual
-                let vidaMaxima = nomeInimigoAtual === "Tung Sahur" ? 110 : 120
-                document.getElementById("barraVidaInimigo").style.width =
-                    (vidaInimigoAtual / vidaMaxima) * 100 + "%"
-                await esperarAtualizacao()
-                furia = 0
-                await atualizarInterface()
-                alert("Você atacou " + nomeInimigoAtual + " com a FURIA ativada!")
-                alert("Você causou " + dano + " de dano!\nVida restante do inimigo: " + vidaInimigoAtual)
-                return true
-            } else {
-                let faltaFuria = 50 - furia
-                alert("Voce ainda nao atingiu furia suficiente para usar esse poder, falta " + faltaFuria + " de furia!")
-                return false
-            }
-        }
-
-        // ATUALIZAR INTERFACE
-        function atualizarInterface() {
-
-            document.getElementById("vidaJogador").textContent = vida
-            document.getElementById("pocoesJogador").textContent = pocoes
-
-            document.getElementById("barraVidaJogador").style.width = vida + "%"
-            document.getElementById("barraFuriaJogador").style.width = (furia / 50) * 100 + "%"
-        }
-
-        // EVENTOS DOS BOTÕES
-        let botaoAtacar = document.getElementById("btnAtacar")
-        botaoAtacar.addEventListener("click", async function () {
-            console.log("Botão Atacar clicado!")
-            if (resolverBatalha === null) {
-                return
-            }
-            botaoAtacar.disabled = true
-            vidaInimigoAtual = await atacarInimigo(
-                nomeInimigoAtual,
-                vidaInimigoAtual
-            )
-            if (vidaInimigoAtual <= 0) {
-                alert("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
-                finalizarBatalha()
-            } else {
-                await turnoInimigo()
-            }
-            botaoAtacar.disabled = false
-        })
-
-        let botaoPocao = document.getElementById("btnPocao")
-        botaoPocao.addEventListener("click", async function () {
-            console.log("botao cricado")
-            if (resolverBatalha === null) {
-                return
-            }
-            botaoPocao.disabled = true
-            let curou = await usarPocao()
-            if (curou === true) {
-                await turnoInimigo()
-            }
-            botaoPocao.disabled = false
-        })
-
-        let botaoPoder = document.getElementById("btnPoder")
-        botaoPoder.addEventListener("click", async function () {
-            console.log("Botao poder foi clicado")
-            if (resolverBatalha === null) {
-                return
-            }
-            botaoPoder.disabled = true
-            let poder = await usarPoder()
-            if (poder === true) {
-                if (vidaInimigoAtual <= 0) {
-                    alert("Parabéns! Você derrotou " + nomeInimigoAtual + "!")
-                    finalizarBatalha()
-                } else {
-                    await turnoInimigo()
-                }
-            }
-            botaoPoder.disabled = false
-        })
-
-
-        // INICIAR AVENTURA
-        async function iniciarAventura() {
-
-            alert("Bem vindo " + playerName + " à aventura do JavaScript!")
-
-            alert("Seu personagem é um aventureiro que recebeu uma missão: encontrar um reino perdido que desapareceu há centenas de anos.")
-
-            alert("Esse Mini Game é baseado em escolhas, você terá que tomar decisões para conseguir chegar ao reino perdido.")
-
-            let escolha1 = prompt("Você aceita a missão de encontrar o Reino Perdido? (sim ou não)").toLowerCase()
-
-            while (escolha1 !== "sim" && escolha1 !== "não") {
-                alert("Resposta inválida")
-                escolha1 = prompt("Você aceita a missão de encontrar o Reino Perdido? (sim ou não)").toLowerCase()
-            }
-
-            if (escolha1 === "sim") {
-                alert("Você aceitou a missão! Vamos começar a jornada.")
-            } else if (escolha1 === "não") {
-                alert("Você hesitou, mas a missão precisa ser cumprida. Sua aventura começa agora!")
-            }
-
-            let escolha2 = prompt("Você está em uma floresta densa e encontra um caminho bifurcado. Você segue o caminho da esquerda ou da direita? (esquerda ou direita)").toLowerCase()
-
-            while (escolha2 !== "esquerda" && escolha2 !== "direita") {
-                alert("Resposta inválida")
-                escolha2 = prompt("Você está em uma floresta densa e encontra um caminho bifurcado. Você segue o caminho da esquerda ou da direita? (esquerda ou direita)").toLowerCase()
-            }
-
-            if (escolha2 === "esquerda") {
-
-                alert("Você seguiu o caminho da esquerda e encontrou um rio. Você precisa atravessar o rio para continuar sua jornada.")
-
-                let escolha3 = prompt("Você encontra uma ponte instável. Você decide atravessar a ponte ou procurar outro caminho? (atravessar ou procurar)").toLowerCase()
-
-                while (escolha3 !== "atravessar" && escolha3 !== "procurar") {
-                    alert("Resposta inválida")
-                    escolha3 = prompt("Você encontra uma ponte instável. Você decide atravessar a ponte ou procurar outro caminho? (atravessar ou procurar)").toLowerCase()
-                }
-
-                if (escolha3 === "atravessar") {
-
-                    alert("Você caiu na água e a correnteza te levou para longe. Infelizmente, você não conseguiu completar a missão. Fim de Jogo.")
-
-                } else if (escolha3 === "procurar") {
-
-                    alert("Você encontrou um caminho alternativo e conseguiu atravessar o rio com segurança. Parabéns! Você continuou sua jornada em busca do Reino Perdido.")
-
-                    let escolha5 = prompt("Após atravessar o rio, você encontra um castelo abandonado. Deseja entrar para investigar? (sim ou não)").toLowerCase()
-
-                    while (escolha5 !== "sim" && escolha5 !== "não") {
-                        alert("Resposta inválida")
-                        escolha5 = prompt("Após atravessar o rio, você encontra um castelo abandonado. Deseja entrar para investigar? (sim ou não)").toLowerCase()
-                    }
-
-                    if (escolha5 === "sim") {
-
-                        alert("Você entra no castelo e encontra uma passagem secreta que leva diretamente ao Reino Perdido. Parabéns, você completou sua missão!")
-
-                    } else if (escolha5 === "não") {
-
-                        alert("Você decide continuar pela floresta, mas acaba se deparando com um Tung Tung Sahur maligno!")
-
-                        vidaTungSahur = await combaterInimigo("Tung Sahur", vidaTungSahur)
-
-                        if (vida > 0) {
-
-                            alert("Após derrotar o Tung Sahur, você encontra uma passagem escondida que leva a uma antiga vila.")
-
-                            let escolhaFinal1 = prompt("Você deseja seguir para a vila ou explorar uma torre misteriosa? (vila ou torre)").toLowerCase()
-
-                            while (escolhaFinal1 !== "vila" && escolhaFinal1 !== "torre") {
-                                alert("Resposta inválida!")
-                                escolhaFinal1 = prompt("Você deseja seguir para a vila ou explorar uma torre misteriosa? (vila ou torre)").toLowerCase()
-                            }
-
-                            if (escolhaFinal1 === "vila") {
-                                alert("Você chega à vila e descobre que os moradores conhecem a localização do Reino Perdido. Eles mostram o caminho e você finalmente completa sua missão! Parabéns!")
-                            } else {
-                                alert("Você explora a torre e encontra um mapa antigo que revela a localização do Reino Perdido. Com o mapa em mãos, você encontra o reino e conclui sua aventura com sucesso!")
-                            }
-
-                        } else {
-
-                            alert("Você foi derrotado pelo Tung Sahur. Sem forças para continuar, sua jornada termina na floresta. Fim de jogo!")
-
-                        }
-                    }
-                }
-
-            } else if (escolha2 === "direita") {
-
-                alert("Você seguiu o caminho da direita e encontrou uma caverna escura. Você precisa decidir se entra na caverna ou procura outro caminho.")
-
-                let escolha4 = prompt("Você decide entrar na caverna? (sim ou não)").toLowerCase()
-
-                while (escolha4 !== "sim" && escolha4 !== "não") {
-                    alert("Resposta inválida")
-                    escolha4 = prompt("Você decide entrar na caverna? (sim ou não)").toLowerCase()
-                }
-
-                if (escolha4 === "sim") {
-
-                    alert("Você decide entrar na caverna e encontra um tesouro escondido! Parabéns, você encontrou o Reino Perdido e completou sua missão com sucesso!")
-
-                } else if (escolha4 === "não") {
-
-                    alert("Você decide não entrar na caverna e continuar sua jornada, porém no caminho encontrou com um jacaré de 3 METROS!")
-
-                    vidaJacare = await combaterInimigo("Jacaré de 3 metros", vidaJacare)
-
-                    if (vida > 0) {
-
-                        alert("Você conseguiu derrotar o jacaré e sobreviveu ao encontro!")
-
-                        alert("Após a batalha, você percebe duas passagens no fundo da caverna.")
-
-                        let escolhaFinal2 = prompt("Você deseja seguir por uma passagem iluminada ou por um túnel escuro? (iluminada ou escuro)").toLowerCase()
-
-                        while (escolhaFinal2 !== "iluminada" && escolhaFinal2 !== "escuro") {
-                            alert("Resposta inválida!")
-                            escolhaFinal2 = prompt("Você deseja seguir por uma passagem iluminada ou por um túnel escuro? (iluminada ou escuro)").toLowerCase()
-                        }
-
-                        if (escolhaFinal2 === "iluminada") {
-
-                            alert("Você segue pela passagem iluminada e encontra uma enorme sala cheia de tesouros. No centro dela está a entrada do Reino Perdido! Você conseguiu completar sua missão!")
-
-                        } else {
-
-                            alert("Você atravessa o túnel escuro e encontra uma saída secreta que leva diretamente ao Reino Perdido. Depois de tantos desafios, sua aventura finalmente termina com sucesso!")
-
-                        }
-
-                    } else {
-
-                        alert("O jacaré foi mais forte do que você imaginava. Ferido e sem forças, você não consegue escapar da caverna. Fim de jogo!")
-
-                    }
-                }
-            }
-        }
-
-        iniciarAventura()
-
-    </script>
-
+    <script src="script.js"></script>
 </body>
 
 </html>
